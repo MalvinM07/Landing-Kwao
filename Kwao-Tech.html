@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Definições de codificação de caracteres e viewport para responsividade -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kwao.tech</title>
+
+<!-- Pré-conexão e importação das fontes do Google (Archivo Black, Poppins) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  /* Fontes ativamente usadas no layout (títulos, nav, hero) */
+  @font-face {
+    font-family: 'Akira';
+    src: url('fonts/Akira Expanded Demo.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Strech';
+    src: url('fonts/StretchPro.otf') format('opentype');
+  }
+
+  /* Fontes carregadas mas ainda não aplicadas a nenhum elemento — mantidas para uso futuro */
+  @font-face {
+    font-family: 'Quick';
+    src: url('fonts/Quick Beach.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Makcasa';
+    src: url('fonts/Makcasa-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Cinzel';
+    src: url('fonts/CinzelDecorative-Regular.otf') format('opentype');
+  }
+  /* =========================================
+     VARIÁVEIS GLOBAIS (Paleta de Cores)
+     ========================================= */
+  :root{
+    --green-dark:#0d332c;   /* Fundo principal e elementos escuros */
+    --green-mid:#12433a;    /* Fundo secundário e destaques */
+    --mint-bg:#e7f3ee;      /* Fundo claro para contraste (ex: secção founders) */
+    --white:#ffffff;        /* Cor de texto principal e fundos neutros */
+    --purple:#6a63e8;       /* Cor de destaque (ex: arte na secção schedule) */
+    --purple-accent:#948fee;/* Variante clara do roxo — usada em texto/ícones sobre fundo escuro (contraste ≥4.5:1, WCAG AA) */
+    --text-light:#cfe3dc;   /* Cor de texto secundário/atenuado */
+    --focus-ring:#12433a;   /* Anel de focus para secções claras (9.8:1 no mint-bg/branco) */
+  }
+
+  /* Nas secções de fundo escuro, o anel de focus muda para claro (9–13:1 de contraste) */
+  header, .about, .services, .schedule, footer{
+    --focus-ring:#e7f3ee;
+  }
+
+  /* =========================================
+     RESET BÁSICO
+     ========================================= */
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+
+  /* Rolagem suave ao clicar em links âncora (ex: menu -> secção) */
+  html{
+    scroll-behavior:smooth;
+  }
+
+  /* Anel de focus visível e consistente para navegação por teclado */
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  label:focus-visible,
+  input:focus-visible{
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Respeita a preferência do utilizador por menos movimento */
+  @media (prefers-reduced-motion: reduce){
+    html{
+      scroll-behavior:auto;
+    }
+    *{
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    .reveal{
+      opacity:1 !important;
+      transform:none !important;
+    }
+  }
+
+  /* =========================================
+     ANIMAÇÕES DE SCROLL (reveal on scroll)
+     ========================================= */
+  .reveal{
+    opacity:0;
+    transform:translateY(36px);
+    transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+    will-change:opacity, transform;
+  }
+
+  .reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* Variante com leve atraso para elementos que aparecem em conjunto (efeito cascata) */
+  .reveal-delay-1.is-visible{ transition-delay:0.12s; }
+  .reveal-delay-2.is-visible{ transition-delay:0.24s; }
+  .reveal-delay-3.is-visible{ transition-delay:0.36s; }
+
+  /* Variante de fade simples (sem deslocamento vertical), usada em elementos largos */
+  .reveal-fade{
+    opacity:0;
+    transition:opacity 0.9s ease-out;
+  }
+  .reveal-fade.is-visible{
+    opacity:1;
+  }
+
+  /* Variante de escala suave, usada no bloco de vídeo/arte 3D */
+  .reveal-scale{
+    opacity:0;
+    transform:scale(0.92);
+    transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-scale.is-visible{
+    opacity:1;
+    transform:scale(1);
+  }
+
+  /* =========================================
+     ESTILOS GERAIS DA PÁGINA
+     ========================================= */
+  body{
+    font-family:'Poppins', sans-serif;
+    color:var(--white);
+    background:var(--white);
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3{
+    font-family:'Archivo Black', sans-serif;
+    text-transform:uppercase;
+  }
+
+  a{
+    color:inherit;
+    text-decoration:none;
+  }
+
+  .container{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 40px;
+    width: 100%;
+  }
+
+  /* =========================================
+     ESTRUTURA DE ECRÃ INTEIRO (RESPONSIVO)
+     ========================================= */
+    /* DESKTOP */
+    header{
+    /* Cor de reserva: se a imagem abaixo não carregar, a secção fica verde-escura em vez de branca (evita texto branco sobre fundo branco) */
+    background-color:var(--green-dark);
+    background-image:url("assets/background\ Kwao\ tech.png");
+    background-position:center;
+    background-repeat:no-repeat;
+    background-size:cover;
+
+    width:100%;
+    min-height:100vh;
+
+    /* Necessário para que ".hero{ flex:1 }" preencha o espaço abaixo do menu */
+    display:flex;
+    flex-direction:column;
+    }
+
+  .founders, 
+  .about, 
+  .schedule {
+    width: 100%;
+    min-height: 100vh; /* Força a ocupar a altura total da tela */
+    display: flex;
+    align-items: center; /* Centraliza o conteúdo verticalmente */
+    justify-content: center;
+    padding: 80px 0;
+  }
+
+  /* =========================================
+     CABEÇALHO (HEADER) E NAVEGAÇÃO
+     ========================================= */
+  .header-inner{
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 40px 0 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .logo-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .logo-group img{
+    height:100px;
+    margin-top: -45px;
+    margin-bottom: -15px;
+    width:auto;
+  }
+
+  nav{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:8px;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.14),
+            rgba(255,255,255,.05)
+        );
+
+    backdrop-filter:blur(28px) saturate(180%);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+
+    border:1px solid rgba(255,255,255,.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        inset 0 -1px 0 rgba(255,255,255,.06),
+        0 10px 35px rgba(0,0,0,.18);
+    }
+
+  nav a{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:12px 22px;
+    border-radius:999px;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    font-family:Akira, serif;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.10);
+    transition:.35s cubic-bezier(.2,.8,.2,1);
+  }
+
+  /* Brilho superior (glass highlight) */
+  nav a::before{
+    content:"";
+    position:absolute;
+    inset:2px;
+    border-radius:inherit;
+    background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.12), transparent 50%);
+    pointer-events:none;
+  }
+
+  /* Reflexo animado que se move ao passar o rato */
+  nav a::after{
+    content:"";
+    position:absolute;
+    width:180%;
+    height:180%;
+    left:-45%;
+    top:-140%;
+    background:radial-gradient(ellipse, rgba(255,255,255,.40), rgba(255,255,255,.14) 20%, transparent 60%);
+    transform:rotate(-18deg);
+    transition:.6s ease;
+  }
+
+  nav a:hover{
+    transform:translateY(-2px);
+    background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+    border-color:rgba(255,255,255,.25);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.60),
+      inset 0 -1px 0 rgba(255,255,255,.10),
+      0 10px 30px rgba(0,0,0,.22);
+  }
+
+  nav a:hover::after{
+    left:-5%;
+    top:-60%;
+  }
+
+  nav a.active{
+    background:linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.12));
+    border-color:rgba(255,255,255,.30);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.75),
+      inset 0 -1px 0 rgba(255,255,255,.12),
+      0 10px 30px rgba(0,0,0,.20);
+  }
+
+
+  /* =========================================
+     MENU MOBILE (Hamburguer) — escondido no desktop
+     ========================================= */
+  .nav-toggle-checkbox{
+    display:none;
+  }
+
+  .nav-toggle-btn{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:6px;
+    width:44px;
+    height:44px;
+    padding:13px 9px;
+    cursor:pointer;
+    z-index:30;
+    position:relative;
+  }
+
+  .nav-toggle-btn span{
+    display:block;
+    height:2px;
+    width:100%;
+    background:var(--white);
+    border-radius:2px;
+    transition:transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .nav-overlay{
+    display:none;
+  }
+
+  /* =========================================
+     SECÇÃO HERO
+     ========================================= */
+  .hero {
+    flex: 1; /* Ocupa todo o espaço restante abaixo do menu */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 40px;
+  }
+
+  .hero-inner{
+    max-width: 1200px;
+    width: 100%;
+    margin:0 auto;
+    padding:0 40px;
+    text-align: left; /* Alinhamento para permitir o recuo do design */
+  }
+
+
+  .hero h1{
+    font-size:clamp(65px, 10vw, 140px);
+    line-height:0.9;
+    letter-spacing:-2px;
+    display: inline-block;
+    font-family: Akira, Times, serif;
+
+  }
+
+  /* Efeito de recuo idêntico à imagem mockup */
+  .hero h1 .indent {
+    margin-left: 3.0em;
+    display: block;
+  }
+
+  /* Animação de entrada do hero ao carregar a página */
+  .hero-inner h1{
+    opacity:0;
+    transform:translateY(24px);
+    animation:heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+  }
+
+  .hero-cta{
+    margin-top:110px;
+    text-align: center; /* Centraliza o botão em relação à tela */
+    width: 100%;
+    opacity:0;
+    transform:translateY(24px);
+    animation:heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.45s forwards;
+  }
+
+  @keyframes heroIn{
+    to{
+      opacity:1;
+      transform:translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero-inner h1, .hero-cta{
+      animation:none;
+      opacity:1;
+      transform:none;
+    }
+  }
+
+  /* Botões vazados estilo pílula (Sem sublinhado interno) */
+  .btn-outline{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    padding:14px 44px;
+    border-radius:999px;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.6px;
+    text-transform:uppercase;
+    cursor:pointer;
+    user-select:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.08) 45%, rgba(255,255,255,.02) 100%);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.55),
+      inset 0 -1px 0 rgba(255,255,255,.08),
+      inset 0 0 18px rgba(255,255,255,.08),
+      0 8px 30px rgba(0,0,0,.18);
+    transition:
+      transform .35s cubic-bezier(.2,.8,.2,1),
+      box-shadow .35s ease,
+      border-color .35s ease,
+      background .35s ease;
+  }
+
+  .btn-outline::before{
+    content:"";
+    position:absolute;
+    inset:2px;
+    border-radius:inherit;
+    background:linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.18) 18%, rgba(255,255,255,0) 45%);
+    opacity:.9;
+    pointer-events:none;
+  }
+
+  .btn-outline::after{
+    content:"";
+    position:absolute;
+    width:180%;
+    height:180%;
+    top:-130%;
+    left:-40%;
+    background:radial-gradient(ellipse, rgba(255,255,255,.45) 0%, rgba(255,255,255,.18) 18%, transparent 55%);
+    transform:rotate(-18deg);
+    transition:.6s ease;
+    pointer-events:none;
+  }
+
+  .btn-outline:hover{
+    transform:translateY(-2px) scale(1.015);
+    border-color:rgba(255,255,255,.35);
+    background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.12), rgba(255,255,255,.04));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.7),
+      inset 0 -1px 0 rgba(255,255,255,.12),
+      inset 0 0 25px rgba(255,255,255,.12),
+      0 15px 40px rgba(0,0,0,.25);
+  }
+
+  .btn-outline:hover::after{
+    top:-55%;
+    left:-5%;
+  }
+
+  .btn-outline:active{
+    transform:scale(.98);
+  }
+
+  /* =========================================
+     SECÇÃO DOS FUNDADORES (FOUNDERS)
+     ========================================= */
+  .founders{
+    background:var(--mint-bg);
+    text-align:center;
+  }
+
+  .founders h2{
+    color:var(--green-mid);
+    font-size:60px;
+    margin-bottom:60px;
+    letter-spacing:1px;
+    font-family: Strech, Times, serif;
+  }
+
+
+  .founders-grid{
+    display: flex;
+    justify-content: center;
+  }
+
+  .founder-card{
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    text-align: left;
+    max-width: 1000px;
+  }
+
+  .founder-photo{
+    flex: 0 0 400px; /* Mantém a largura da foto fixa */
+    aspect-ratio:1/1; 
+    border-radius:40px; /* Cantos arredondados acentuados */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow: hidden; 
+  }
+
+  .founder-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+  }
+
+  .founder-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .founder-card h3{
+    color:var(--green-mid);
+    font-size:24px;
+    letter-spacing:0.5px;
+    margin-bottom:14px;
+    text-transform: uppercase;
+    font-weight: 800;
+    font-family: Strech, Times, serif;
+  }
+
+  .founder-card p{
+    font-size:14px;
+    line-height:1.7;
+    color:#5b6b65;
+  }
+
+  .founder-card a{
+    font-size: 16px;
+    color: #003934;
+  }
+  .founder-card i{
+    color:#003934;
+  }
+
+  /* =========================================
+     SECÇÃO SOBRE NÓS (ABOUT)
+     ========================================= */
+  .about{
+    background:var(--green-mid);
+    text-align:center;
+  }
+
+  .about h2{
+    font-size:44px;
+    margin-bottom:34px;
+    letter-spacing:1px;
+    font-family: Strech, Times, serif;
+  }
+
+  .about p{
+    max-width:700px;
+    margin:0 auto;
+    font-size:15px;
+    line-height:1.8;
+    color:var(--text-light);
+    font-weight:400;
+  }
+
+  .about-values{
+    max-width:340px;
+    margin:56px auto 0 auto;
+  }
+
+  .about-values div{
+    border-bottom:1px solid rgba(255,255,255,0.3);
+    padding:14px 0;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+
+  /* =========================================
+     SECÇÃO SERVICES (Serviços)
+     ========================================= */
+  .services {
+  position: relative; 
+  background: transparent;
+  display: grid; 
+  padding:0;
+  }
+
+  .services-video-bg {
+  grid-area: 1 / 1 ;
+  align-self: start;
+  position: sticky; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; 
+  object-fit: cover; 
+  z-index: -1;
+  }
+
+  .services .container{
+    grid-area: 1 / 1;
+    position: relative; 
+    z-index: 2;
+    text-align:center;
+    padding-top:110px;
+    padding-bottom: 110px;
+  }
+
+  .services h2{
+    font-size:44px;
+    margin-bottom:20px;
+    letter-spacing:1px;
+    font-family: Strech, Times, serif;
+  }
+
+  .services-intro{
+    max-width:680px;
+    margin:0 auto 80px auto;
+    font-size:15px;
+    line-height:1.8;
+    color:var(--text-light);
+    font-weight:400;
+  }
+
+  /* Bloco principal — Desenvolvimento Web (acordeão) */
+  .services-block{
+    margin-bottom:80px;
+  }
+
+  .services-block-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:36px;
+  }
+
+  .services-block-header i{
+    font-size:24px;
+    color:var(--purple-accent);
+  }
+
+  .services-block-header h3{
+    font-size:22px;
+    letter-spacing:0.5px;
+    font-family: Strech, Times, serif;
+  }
+
+  .services-block-caption{
+    max-width:620px;
+    margin:0 auto 32px auto;
+    font-size:14px;
+    line-height:1.7;
+    color:var(--text-light);
+  }
+
+  .services-accordion{
+    max-width:820px;
+    margin:0 auto;
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .service-item{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.05)), rgba(255,255,255,.02);
+    backdrop-filter:blur(26px) saturate(190%);
+    -webkit-backdrop-filter:blur(26px) saturate(190%);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:26px;
+    padding:0 28px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.45),
+      inset 0 -1px 0 rgba(255,255,255,.08),
+      inset 0 0 25px rgba(255,255,255,.06),
+      0 10px 30px rgba(0,0,0,.20);
+    transition:
+      transform .35s cubic-bezier(.2,.8,.2,1),
+      border-color .35s ease,
+      background .35s ease,
+      box-shadow .35s ease;
+  }
+
+  .service-item::before{
+    content:"";
+    position:absolute;
+    inset:2px;
+    border-radius:inherit;
+    background:linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.18) 20%, transparent 48%);
+    pointer-events:none;
+  }
+
+  .service-item::after{
+    content:"";
+    position:absolute;
+    width:180%;
+    height:180%;
+    left:-45%;
+    top:-140%;
+    background:radial-gradient(ellipse, rgba(255,255,255,.40) 0%, rgba(255,255,255,.16) 18%, transparent 60%);
+    transform:rotate(-16deg);
+    transition:.65s ease;
+    pointer-events:none;
+  }
+
+  .service-item:hover,
+  .service-item[open]{
+    transform:translateY(-3px);
+    background:linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.10), rgba(255,255,255,.04));
+    border-color:rgba(255,255,255,.30);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.70),
+      inset 0 -1px 0 rgba(255,255,255,.12),
+      inset 0 0 35px rgba(255,255,255,.10),
+      0 18px 45px rgba(0,0,0,.28);
+  }
+
+  .service-item:hover::after,
+  .service-item[open]::after{
+    left:-8%;
+    top:-65%;
+  }
+
+  .service-item summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:22px 0;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.3px;
+  }
+
+  .service-item summary::-webkit-details-marker{
+    display:none;
+  }
+
+  .service-item summary .label{
+    display:flex;
+    align-items:baseline;
+  }
+
+  .service-item summary .num{
+    color:var(--purple-accent);
+    font-family:'Archivo Black', sans-serif;
+    font-size:13px;
+    margin-right:16px;
+    flex:0 0 auto;
+  }
+
+  .service-item summary .chevron{
+    transition:transform 0.25s ease;
+    flex:0 0 auto;
+    font-size:14px;
+  }
+
+  .service-item[open] summary .chevron{
+    transform:rotate(180deg);
+  }
+
+  .service-body{
+    padding:0 0 28px 0;
+    color:var(--text-light);
+    font-size:14px;
+    line-height:1.75;
+  }
+
+  .service-body p{
+    margin-bottom:12px;
+  }
+
+  .service-body p:last-of-type{
+    margin-bottom:16px;
+  }
+
+  .service-body strong{
+    color:var(--white);
+  }
+
+  .service-complexity{
+    display:inline-block;
+    padding:5px 16px;
+    border:1px solid rgba(255,255,255,0.28);
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--white);
+  }
+
+  /* =========================================
+     SECÇÃO WORD CLOUD (Faixas de Palavras)
+     ========================================= */
+  .cloud{
+    background:var(--mint-bg);
+    padding:100px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow:hidden;
+    width: 100%;
+  }
+
+  .cloud-line{
+    display:flex;
+    align-items:center;
+    white-space:nowrap;
+    font-family: Akira, Times, serif;
+    color:var(--green-mid);
+    font-size:clamp(50px, 7.5vw, 105px);
+    line-height:1.1;
+    gap:26px;
+    text-transform: uppercase;
+  }
+
+  .cloud-line .img{
+    height:0.85em;
+    width:1.3em;
+    border-radius:12px;
+    flex:0 0 auto;
+    background-size:cover;
+    background-position:center;
+  }
+
+  /* Troque os gradientes abaixo pelas imagens reais da sua pasta assets */
+  .img.g1{ background: url('assets/f1.jpg') no-repeat center/cover; }
+  .img.g2{ background:url('assets/f5.jpg') no-repeat center/cover; }
+  .img.g3{ background: url('assets/f4.jpg') no-repeat center/cover; }
+  .img.g4{ background: url(assets/f7.jpg) no-repeat center/cover; }
+  .img.g5{ background:url(assets/f2.jpg) no-repeat center/cover; }
+  .img.g6{ background:url('assets/f3.jpg') no-repeat center/cover; }
+
+  /* =========================================
+     SECÇÃO DE AGENDAMENTO (SCHEDULE)
+     ========================================= */
+  .schedule{
+    background:var(--green-dark);
+  }
+
+  .schedule-inner{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+    align-items:center;
+  }
+
+  /* Substitua pelo render 3D roxo da imagem */
+  .schedule-art{
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:32px;
+    background-color: var(--purple); /* Fallback */
+    overflow: hidden;
+    position: relative;
+  }
+
+  .schedule-art video{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
+
+  .schedule h2{
+    font-size:46px;
+    line-height:1.1;
+    margin-bottom:24px;
+    font-family: Strech, Times, serif;
+  }
+
+  .schedule p{
+    font-size:14px;
+    line-height:1.8;
+    color:var(--text-light);
+    max-width:400px;
+    margin-bottom:34px;
+  }
+
+  /* =========================================
+     RODAPÉ (FOOTER)
+     ========================================= */
+  footer{
+    background:var(--green-dark);
+    text-align:center;
+    padding:28px 0;
+    font-size:12px;
+    color:var(--text-light);
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+
+  /* =========================================
+     MEDIA QUERIES (Responsividade)
+     ========================================= */
+
+     /* MOBILE */
+    @media screen and (max-width:768px){
+
+        header{
+
+        background-color:var(--green-dark);
+        background-image:url("assets/background\ mobile.png");
+        background-position:center;
+        background-size:cover;
+        background-repeat:no-repeat;
+
+        }
+
+    }
+    @media (max-width: 900px){
+        header{
+        min-height:100vh;
+        padding:0;
+        }
+
+    .founders,
+    .about,
+    .schedule{
+        min-height:auto;
+        padding:60px 0;
+    }
+
+    .container{ padding: 0 24px; }
+    .header-inner{ padding: 22px 24px 0 24px; }
+    .hero-inner{ padding: 0 24px; }
+
+    .logo-group img{ height:70px; margin-top:-25px; margin-bottom:-10px; }
+
+    /* Botão hamburguer visível apenas no mobile */
+    .nav-toggle-btn{ display:flex; }
+
+    /* Menu passa a painel lateral (off-canvas) em vez de desaparecer */
+    nav{
+      position:fixed;
+      top:0;
+      right:0;
+      height:100vh;
+      width:min(78vw, 300px);
+      background:var(--green-dark);
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:center;
+      gap:32px;
+      padding:40px;
+      transform:translateX(100%);
+      transition:transform 0.35s ease;
+      z-index:25;
+    }
+
+    nav a{ font-size:16px; padding:12px 0; }
+
+    .nav-toggle-checkbox:checked ~ nav{
+      transform:translateX(0);
+    }
+
+    .nav-toggle-checkbox:checked ~ .nav-toggle-btn span:nth-child(1){
+      transform:translateY(8px) rotate(45deg);
+    }
+    .nav-toggle-checkbox:checked ~ .nav-toggle-btn span:nth-child(2){
+      opacity:0;
+    }
+    .nav-toggle-checkbox:checked ~ .nav-toggle-btn span:nth-child(3){
+      transform:translateY(-8px) rotate(-45deg);
+    }
+
+    .nav-toggle-checkbox:checked ~ .nav-overlay{
+      display:block;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:20;
+    }
+
+    /* Hero */
+    /* Deixa de centrar verticalmente: assim o título fica fixo perto do topo
+       e o espaço do botão (.hero-cta) não "empurra" o título junto */
+    .hero{ align-items:flex-start; justify-content:flex-start; padding-top:275px; }
+    .hero-cta{ margin-top:230px; }
+    .hero h1 .indent { margin-left: 0; display: inline; }
+
+    /* Founders */
+    .founders h2{ font-size:40px; margin-bottom:40px; }
+    .founder-card { flex-direction: column; text-align: center; gap: 30px; }
+    .founder-photo { flex: 0 0 auto; width: 100%; max-width: 360px; }
+
+    /* About */
+    .about h2{ font-size:34px; }
+
+    /* Services */
+    .services{ padding: 0; }
+    .services .container { padding-top: 70px; padding-bottom: 70px; }
+    .services h2{ font-size:34px; }
+    .services-intro{ margin-bottom:56px; }
+    .services-block{ margin-bottom:56px; }
+    .service-item summary{ font-size:14px; }
+
+    /* Word cloud */
+    .cloud{ padding:70px 0; }
+    .cloud-line{ font-size:clamp(34px, 9vw, 105px); gap:16px; }
+
+    /* Schedule */
+    .schedule h2{ font-size:36px; }
+    .schedule p{ margin-left:auto; margin-right:auto; }
+    .schedule-inner{ grid-template-columns:1fr; gap: 40px; text-align:center; }
+  }
+
+  @media (max-width: 480px){
+    .container{ padding:0 18px; }
+    .header-inner{ padding:18px 18px 0 18px; }
+    .hero-inner{ padding:0 18px; }
+    .logo-group img{ height:56px; margin-top:-18px; margin-bottom:-8px; }
+
+    .hero h1{ letter-spacing:-1px; }
+    .hero-cta{ margin-top:230px; }
+    .btn-outline{ padding:12px 32px; font-size:12px; }
+
+    .founders h2{ font-size:32px; }
+    .founder-card h3{ font-size:20px; }
+    .founder-card p{ font-size:13px; }
+
+    .about h2{ font-size:28px; }
+    .about p{ font-size:14px; }
+
+    .cloud-line{ font-size:clamp(26px, 11vw, 105px); gap:12px; }
+
+    .services h2{ font-size:28px; }
+    .services-intro{ font-size:14px; }
+    .services-block-header h3{ font-size:18px; }
+    .service-item{ padding:0 18px; }
+    .service-item summary{ padding:18px 0; gap:12px; }
+    .service-body{ font-size:13px; }
+
+    .schedule h2{ font-size:28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cabeçalho Principal -->
+<header>
+  <div class="header-inner">
+    <div class="logo-group">
+      <img src="assets/logo kwao.png" alt="Kwao.tech logo">
+    </div>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
+    <label for="nav-toggle" class="nav-toggle-btn" aria-label="Open menu" role="button" tabindex="0">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+
+    <nav>
+      <a href="#founders">Founder</a>
+      <a href="#about">About us</a>
+      <a href="#services">Services</a>
+      <a href="#schedule">Scheduling</a>
+    </nav>
+
+    <label for="nav-toggle" class="nav-overlay"></label>
+  </div>
+
+  <!-- Secção Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Kwao<br><span class="indent">tech</span></h1>
+      <div class="hero-cta">
+        <a class="btn-outline" href="#schedule">Contact us</a>
+      </div>
+    </div>
+  </section>
+</header>
+
+<!-- Secção Founders -->
+<section class="founders" id="founders">
+  <div class="container">
+    <h2 class="reveal">Founder</h2>
+    <div class="founders-grid">
+      <!-- Founder Único Lado a Lado -->
+      <div class="founder-card reveal">
+        <div class="founder-photo">
+          <img src="assets/Malvin.jpg" alt="Malvin Manguele">
+        </div>
+        <div class="founder-info">
+          <h3>Malvin Manguele</h3>
+          <p>Malvin Manguele is the founder of Kwao tech and an Information Technology professional with over four years of industry experience. Currently pursuing a degree in Computer Engineering at Joaquim Chissano University, he combines a solid academic foundation with extensive practical experience in developing and maintaining technology infrastructure. A specialist in software development—covering both Web and Desktop solutions—he is proficient in languages ​​and tools such as Java, C#, PHP, MySQL, HTML, CSS, and JavaScript. His professional background includes Windows system administration, computer network technical support, and the implementation of security solutions. Beyond his strong software engineering skills, he applies his knowledge of Graphic Design and UI/UX to ensure that the platforms he develops are intuitive and user-centric. Driven by a strategic vision focused on problem-solving, continuous improvement, and operational efficiency, he founded Kwao tech with the mission of delivering innovative, high-performance solutions that drive his clients' technological success.</p>
+          <a href="https://www.instagram.com/malvin_nn_?igsh=NTlzcjRraW5tYW9y"><i class="bi bi-instagram" aria-hidden="true"></i> : @malvin_nn_</a>
+          <a href="https://github.com/MalvinM07"><i class="bi bi-github" aria-hidden="true"></i> : @MalvinM07</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Secção About us -->
+<section class="about" id="about">
+  <div class="container">
+    <h2 class="reveal">About us</h2>
+    <p class="reveal reveal-delay-1">We are a digital solutions agency driven by innovative young Mozambicans, focused on web development, branding, content, and digital transformation to boost businesses in Mozambique. We combine technical excellence, user-centric design, and compelling visual storytelling to deliver products that solve real-world problems and connect brands with their audiences.</p>
+    <div class="about-values reveal reveal-delay-2">
+      <div>Efficiency</div>
+      <div>Quality</div>
+      <div>Trust</div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="services" id="services">
+  <video class="services-video-bg" autoplay muted loop playsinline>
+    <source src="videos/backService.mp4" type="video/mp4">
+  </video>
+  <div class="container">
+    <h2 class="reveal">Services</h2>
+    <p class="services-intro reveal reveal-delay-1">From your first page to your most robust system: we build, support, and design the visual identity your brand needs to grow.</p>
+
+    <!-- Web Development -->
+    <div class="services-block reveal">
+      <div class="services-block-header">
+        <i class="bi bi-code-slash" aria-hidden="true"></i>
+        <h3>Web Development</h3>
+      </div>
+
+      <div class="services-accordion">
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">01</span>Landing Pages &amp; Static Websites</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>The starting point of the web, focused mainly on presentation, marketing, and direct conversion. These pages show the same content to every visitor — the server simply delivers ready-made files (HTML/CSS) to the browser — with the only interaction usually being a simple contact or lead-capture form. No database or backend business logic required.</p>
+            <p><strong>Examples:</strong> professional portfolios, product launch pages, simple company websites.</p>
+            <span class="service-complexity">Complexity: Very Low</span>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">02</span>Blogs &amp; CMS-Powered Websites</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Here dynamism comes into play: the site is no longer a static flyer but an updatable platform. Content changes frequently (news, articles) and an admin panel lets non-technical users create, edit, and publish pages without touching any code. Requires a database and backend logic to render pages dynamically.</p>
+            <p><strong>Examples:</strong> news portals, corporate blogs, dynamic company websites.</p>
+            <span class="service-complexity">Complexity: Low – Intermediate</span>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">03</span>E-commerce Platforms</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Systems built purely around commercial transactions and financial flows: managing product catalogs, inventory control, shopping carts, and payment processing. Security becomes a critical pillar, requiring encryption and compliance with financial data standards.</p>
+            <p><strong>Examples:</strong> online retail stores, multi-vendor marketplaces.</p>
+            <span class="service-complexity">Complexity: Intermediate</span>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">04</span>Dynamic Web Apps &amp; Portals</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>The focus shifts from "reading information" to "interacting intensively with tools and data." These are highly interactive systems, often built as Single-Page Applications (SPAs) — where the page never fully reloads — with advanced business rules and strict access control. Requires a robust backend API paired with a rich frontend that handles real-time data.</p>
+            <p><strong>Examples:</strong> admin dashboards, online booking systems, internal CRMs or ERPs, and billing/business management systems.</p>
+            <span class="service-complexity">Complexity: Advanced</span>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- Offline Systems -->
+    <div class="services-block reveal">
+      <div class="services-block-header">
+        <i class="bi bi-pc-display" aria-hidden="true"></i>
+        <h3>Offline Systems</h3>
+      </div>
+      <p class="services-block-caption">Local, offline-first tools that keep daily operations running smoothly — no internet connection required.</p>
+
+      <div class="services-accordion">
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">01</span>Cash &amp; Sales Management</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>A digital cash book paired with daily sales tracking, so every transaction is logged and reconciled — even without an internet connection.</p>
+            <p><strong>Includes:</strong> Digital Cash Book, Daily Sales Management, Receipts &amp; Simple Invoices.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">02</span>Inventory &amp; Orders</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Stock levels and customer orders managed side by side, so nothing runs out — or gets lost — without anyone noticing.</p>
+            <p><strong>Includes:</strong> Stock / Inventory Management, Order Management.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">03</span>Customers &amp; Credit</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>A digital ledger for every customer, with debts and credit tracked automatically instead of on paper.</p>
+            <p><strong>Includes:</strong> Customer Profiles / Digital Ledger, Debt / Credit Tracking.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">04</span>Team Management</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Employee schedules, clock-ins, and attendance kept organized without spreadsheets.</p>
+            <p><strong>Includes:</strong> Employee Management / Time &amp; Attendance.</p>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- Technical Support -->
+    <div class="services-block reveal">
+      <div class="services-block-header">
+        <i class="bi bi-tools" aria-hidden="true"></i>
+        <h3>Technical Support</h3>
+      </div>
+
+      <div class="services-accordion">
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">01</span>Hardware &amp; Software Diagnostics</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Troubleshooting, installation, and maintenance for computers, operating systems, and everyday software issues.</p>
+            <p><strong>Includes:</strong> Hardware/software support, equipment installation &amp; diagnostics.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">02</span>Network &amp; Peripheral Setup</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Configuration of networks, printers, and other peripherals so every device on-site works together.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">03</span>Security &amp; Incident Response</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Ongoing support for system security and integrity, plus fast resolution of technical incidents for end users.</p>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- Graphic Design -->
+    <div class="services-block reveal">
+      <div class="services-block-header">
+        <i class="bi bi-palette2" aria-hidden="true"></i>
+        <h3>Graphic Design</h3>
+      </div>
+
+      <div class="services-accordion">
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">01</span>Visual Identity / Branding</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Logos, color systems, and brand guidelines that give a business a consistent, recognizable face.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">02</span>Marketing &amp; Advertising Design</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Flyers, banners, and campaign visuals designed to grab attention and drive action.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">03</span>Social Media Design</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Templates and graphics tailored to each platform, keeping feeds cohesive and on-brand.</p>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary>
+            <span class="label"><span class="num">04</span>UI/UX Design</span>
+            <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="service-body">
+            <p>Interfaces designed around real user behavior, from wireframes to polished, intuitive screens.</p>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Secção Word Cloud -->
+<section class="cloud">
+  <div class="cloud-line reveal-fade">Design <span class="img g1"></span> Strategy</div>
+  <div class="cloud-line reveal-fade reveal-delay-1"><span class="img g2"></span> <span class="img g3"></span> Marketing</div>
+  <div class="cloud-line reveal-fade reveal-delay-2">Develop <span class="img g4"></span> <span class="img g5"></span> Social</div>
+  <div class="cloud-line reveal-fade reveal-delay-3"><span class="img g6"></span> Architecture</div>
+</section>
+
+<!-- Secção Schedule -->
+<section class="schedule" id="schedule">
+  <div class="container schedule-inner">
+    <div class="schedule-art reveal-scale">
+      <video autoplay loop muted playsinline poster="assets/arte-roxa-3d.png">
+      <source src="videos/last page asmr.mp4" type="video/mp4">
+      </video>
+    </div> 
+    <div class="reveal reveal-delay-1">
+      <h2>Schedule<br>your<br>meeting.</h2>
+      <p>A multidisciplinary team dedicated to creating innovative digital solutions, combining technology, design, and strategy to drive business growth.</p>
+      <a class="btn-outline" href="#">Schedule now</a>
+    </div>
+  </div>
+</section>
+
+<!-- Rodapé -->
+<footer>
+  © 2026 Kwao.tech - Todos os direitos reservados. <br>
+  Desenvolvido por <a href="https://www.instagram.com/malvin_nn_?igsh=NTlzcjRraW5tYW9y" target="_blank">Eng.Malvin Manguele</a> 
+</footer>
+
+
+<!-- Fecha o menu mobile automaticamente ao clicar num link -->
+<script>
+  document.querySelectorAll('nav a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var navToggle = document.getElementById('nav-toggle');
+      if (navToggle) { navToggle.checked = false; }
+    });
+  });
+</script>
+
+<!-- Animações de scroll: revela elementos ao entrarem na tela + destaca o link ativo no menu -->
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1) Revelar elementos (.reveal, .reveal-fade, .reveal-scale) quando entram na viewport
+    var revealTargets = document.querySelectorAll('.reveal, .reveal-fade, .reveal-scale');
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
+    } else {
+      var revealObserver = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target); // anima apenas uma vez
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -60px 0px'
+      });
+
+      revealTargets.forEach(function (el) { revealObserver.observe(el); });
+    }
+
+    // 2) Scrollspy: marca o link do menu correspondente à secção visível no momento
+    var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav a[href^="#"]'));
+    var sections = navLinks
+      .map(function (link) { return document.querySelector(link.getAttribute('href')); })
+      .filter(Boolean);
+
+    function setActiveLink(id) {
+      navLinks.forEach(function (link) {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+
+    if ('IntersectionObserver' in window && sections.length) {
+      var sectionObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setActiveLink(entry.target.id);
+          }
+        });
+      }, {
+        threshold: 0.4
+      });
+
+      sections.forEach(function (section) { sectionObserver.observe(section); });
+    }
+
+    // 3) Clique no menu -> scroll suave até a secção (reforço explícito além do CSS scroll-behavior)
+    navLinks.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var targetId = link.getAttribute('href');
+        var target = document.querySelector(targetId);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            block: 'start'
+          });
+          setActiveLink(targetId.slice(1));
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
