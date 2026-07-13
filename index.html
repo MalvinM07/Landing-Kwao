@@ -625,6 +625,16 @@
   z-index: -1;
   }
 
+  /* Overlay escuro (tom verde do site) sobre o vídeo, para o texto ficar legível.
+     Ajusta os valores de opacidade (0.72 / 0.85) para clarear ou escurecer. */
+  .services::before{
+    content:"";
+    grid-area: 1 / 1;
+    z-index: 1;
+    background:linear-gradient(180deg, rgba(13,51,44,.25) 0%, rgba(13,51,44,.38) 100%);
+    pointer-events:none;
+  }
+
   .services .container{
     grid-area: 1 / 1;
     position: relative; 
@@ -792,11 +802,30 @@
     transform:rotate(180deg);
   }
 
-  .service-body{
-    padding:0 0 28px 0;
+  /* A altura de abertura é controlada via JavaScript (ver script no fim da página),
+     que mede a altura real do conteúdo e anima max-height — isto garante que a
+     transição funciona sempre, tanto a abrir como a fechar, em qualquer browser. */
+  .service-item .service-body{
+    overflow:hidden;
+    max-height:0;
+    transition:max-height 4s cubic-bezier(0.16,1,0.3,1);
     color:var(--text-light);
     font-size:14px;
     line-height:1.75;
+  }
+
+  /* Wrapper interno: fade + deslize suave do texto ao abrir */
+  .service-body-inner{
+    padding:0 0 28px 0;
+    opacity:0;
+    transform:translateY(-16px);
+    transition:opacity 2.5s ease, transform 3s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .service-item[open] .service-body-inner{
+    opacity:1;
+    transform:translateY(0);
+    transition:opacity 3.2s ease 0.6s, transform 3.2s cubic-bezier(0.16,1,0.3,1) 0.6s;
   }
 
   .service-body p{
@@ -1166,9 +1195,11 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>The starting point of the web, focused mainly on presentation, marketing, and direct conversion. These pages show the same content to every visitor — the server simply delivers ready-made files (HTML/CSS) to the browser — with the only interaction usually being a simple contact or lead-capture form. No database or backend business logic required.</p>
             <p><strong>Examples:</strong> professional portfolios, product launch pages, simple company websites.</p>
             <span class="service-complexity">Complexity: Very Low</span>
+          </div>
           </div>
         </details>
 
@@ -1178,9 +1209,11 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Here dynamism comes into play: the site is no longer a static flyer but an updatable platform. Content changes frequently (news, articles) and an admin panel lets non-technical users create, edit, and publish pages without touching any code. Requires a database and backend logic to render pages dynamically.</p>
             <p><strong>Examples:</strong> news portals, corporate blogs, dynamic company websites.</p>
             <span class="service-complexity">Complexity: Low – Intermediate</span>
+          </div>
           </div>
         </details>
 
@@ -1190,9 +1223,11 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Systems built purely around commercial transactions and financial flows: managing product catalogs, inventory control, shopping carts, and payment processing. Security becomes a critical pillar, requiring encryption and compliance with financial data standards.</p>
             <p><strong>Examples:</strong> online retail stores, multi-vendor marketplaces.</p>
             <span class="service-complexity">Complexity: Intermediate</span>
+          </div>
           </div>
         </details>
 
@@ -1202,9 +1237,11 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>The focus shifts from "reading information" to "interacting intensively with tools and data." These are highly interactive systems, often built as Single-Page Applications (SPAs) — where the page never fully reloads — with advanced business rules and strict access control. Requires a robust backend API paired with a rich frontend that handles real-time data.</p>
             <p><strong>Examples:</strong> admin dashboards, online booking systems, internal CRMs or ERPs, and billing/business management systems.</p>
             <span class="service-complexity">Complexity: Advanced</span>
+          </div>
           </div>
         </details>
 
@@ -1227,8 +1264,10 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>A digital cash book paired with daily sales tracking, so every transaction is logged and reconciled — even without an internet connection.</p>
             <p><strong>Includes:</strong> Digital Cash Book, Daily Sales Management, Receipts &amp; Simple Invoices.</p>
+          </div>
           </div>
         </details>
 
@@ -1238,8 +1277,10 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Stock levels and customer orders managed side by side, so nothing runs out — or gets lost — without anyone noticing.</p>
             <p><strong>Includes:</strong> Stock / Inventory Management, Order Management.</p>
+          </div>
           </div>
         </details>
 
@@ -1249,8 +1290,10 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>A digital ledger for every customer, with debts and credit tracked automatically instead of on paper.</p>
             <p><strong>Includes:</strong> Customer Profiles / Digital Ledger, Debt / Credit Tracking.</p>
+          </div>
           </div>
         </details>
 
@@ -1260,8 +1303,10 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Employee schedules, clock-ins, and attendance kept organized without spreadsheets.</p>
             <p><strong>Includes:</strong> Employee Management / Time &amp; Attendance.</p>
+          </div>
           </div>
         </details>
 
@@ -1283,8 +1328,10 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Troubleshooting, installation, and maintenance for computers, operating systems, and everyday software issues.</p>
             <p><strong>Includes:</strong> Hardware/software support, equipment installation &amp; diagnostics.</p>
+          </div>
           </div>
         </details>
 
@@ -1294,7 +1341,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Configuration of networks, printers, and other peripherals so every device on-site works together.</p>
+          </div>
           </div>
         </details>
 
@@ -1304,7 +1353,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Ongoing support for system security and integrity, plus fast resolution of technical incidents for end users.</p>
+          </div>
           </div>
         </details>
 
@@ -1326,7 +1377,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Logos, color systems, and brand guidelines that give a business a consistent, recognizable face.</p>
+          </div>
           </div>
         </details>
 
@@ -1336,7 +1389,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Flyers, banners, and campaign visuals designed to grab attention and drive action.</p>
+          </div>
           </div>
         </details>
 
@@ -1346,7 +1401,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Templates and graphics tailored to each platform, keeping feeds cohesive and on-brand.</p>
+          </div>
           </div>
         </details>
 
@@ -1356,7 +1413,9 @@
             <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
           </summary>
           <div class="service-body">
+            <div class="service-body-inner">
             <p>Interfaces designed around real user behavior, from wireframes to polished, intuitive screens.</p>
+          </div>
           </div>
         </details>
 
@@ -1404,6 +1463,56 @@
       if (navToggle) { navToggle.checked = false; }
     });
   });
+</script>
+
+<!-- Animação de abertura/fecho do accordion de Services (max-height medido dinamicamente) -->
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = document.querySelectorAll('.service-item');
+
+    items.forEach(function (item) {
+      var summary = item.querySelector('summary');
+      var body = item.querySelector('.service-body');
+      if (!summary || !body) return;
+
+      // Garante o estado inicial fechado
+      body.style.maxHeight = '0px';
+
+      summary.addEventListener('click', function (e) {
+        e.preventDefault(); // controlamos a abertura manualmente para poder animar
+
+        if (reduceMotion) {
+          item.open = !item.open;
+          body.style.maxHeight = item.open ? body.scrollHeight + 'px' : '0px';
+          return;
+        }
+
+        if (!item.open) {
+          // ABRIR: primeiro torna o conteúdo "existente" no layout, depois anima até à altura real
+          item.open = true;
+          requestAnimationFrame(function () {
+            body.style.maxHeight = body.scrollHeight + 'px';
+          });
+        } else {
+          // FECHAR: fixa a altura atual e só depois anima até 0, senão não há transição
+          body.style.maxHeight = body.scrollHeight + 'px';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.style.maxHeight = '0px';
+            });
+          });
+
+          body.addEventListener('transitionend', function handler(ev) {
+            if (ev.propertyName === 'max-height') {
+              item.open = false;
+              body.removeEventListener('transitionend', handler);
+            }
+          });
+        }
+      });
+    });
+  })();
 </script>
 
 <!-- Animações de scroll: revela elementos ao entrarem na tela + destaca o link ativo no menu -->
